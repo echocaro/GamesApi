@@ -1,18 +1,17 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 import json
 from app.models.db import db
 from app.models.games import Game
 import os
 import requests
 
+API_KEY = os.environ.get('API_KEY')
 RAWG_API_URL = 'https://api.rawg.io/api/games'
 games_routes = Blueprint("games_routes", __name__)
 
 
 @games_routes.route('/<string:name>', methods=["GET"])
 def get_game_by_name(name):
-    API_KEY = os.environ.get('API_KEY')
-
     if not name:
         return jsonify({"error": "No game name was provided"}), 400
 
@@ -25,6 +24,28 @@ def get_game_by_name(name):
     if response.status_code == 200:
         data = response.json()
         return jsonify(extract_game_details(data)), 200
+    else:
+        return jsonify(response.json()), response.status_code
+
+
+# gets all games
+@games_routes.route("/", methods=["GET"])
+def get_all_games():
+    page = request.args.get('page', 1)
+    page_size = request.args.get('page_size', 20)
+
+    params = {
+        'key': API_KEY,
+        'page': page,
+        'page_size': page_size
+    }
+
+    response = requests.get(RAWG_API_URL, params=params)
+
+    if response.status_code == 200:
+        # need to get just the necessary details
+        data = response.json()
+        return jsonify(data)
     else:
         return jsonify(response.json()), response.status_code
 
