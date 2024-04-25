@@ -69,15 +69,16 @@ def extract_game_details(data, all_games=True):
             return games
 
     else:
-        first_result = results[0]
+        if results and len(results) > 0:
+            first_result = results[0]
 
-        game_details = {
-            "name": first_result.get("name"),
-            "release_date": first_result.get("released"),
-            "first_genre": first_result['genres'][0]['name'] if first_result.get('genres') else "",
-            "stores": [store['store']['name'] for store in first_result.get('stores', [])]
-        }
+            game_details = {
+                "name": first_result.get("name"),
+                "release_date": first_result.get("released"),
+                "first_genre": first_result['genres'][0]['name'] if first_result.get('genres') else "",
+                "stores": [store['store']['name'] for store in first_result.get('stores', [])]
+            }
 
-        return game_details
+            return game_details
 
     return {'error': 'No games found'}
