@@ -5,7 +5,8 @@ class Game(db.Model):
     __tablename__ = "game"
 
     game_store_association = db.Table(
-        'game_store',
+        'store',
+        db.Column('id', db.Integer),
         db.Column('game_id', db.Integer, db.ForeignKey(
             'game.id'), primary_key=True),
         db.Column('store_id', db.Integer, db.ForeignKey(
@@ -16,7 +17,7 @@ class Game(db.Model):
     name = db.Column(db.String, nullable=False)
     genre = db.Column(db.String, nullable=False)
     release_date = db.Column(db.Date, nullable=True)
-    stores = db.relationship('Store', secondary=game_store_association,
+    stores = db.relationship('store', secondary=game_store_association,
                              backref=db.backref('games', lazy='dynamic'))
 
     def to_dict(self):
