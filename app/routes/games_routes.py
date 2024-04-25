@@ -23,7 +23,7 @@ def get_game_by_name(name):
 
     if response.status_code == 200:
         data = response.json()
-        return jsonify(extract_game_details(data)), 200
+        return jsonify(extract_game_details(data, False)), 200
     else:
         return jsonify(response.json()), response.status_code
 
@@ -43,17 +43,32 @@ def get_all_games():
     response = requests.get(RAWG_API_URL, params=params)
 
     if response.status_code == 200:
-        # need to get just the necessary details
         data = response.json()
-        return jsonify(data)
+        return jsonify(extract_game_details(data))
     else:
         return jsonify(response.json()), response.status_code
 
 
-def extract_game_details(data):
+def extract_game_details(data, all_games=True):
     results = data.get('results')
 
-    if results and len(results) > 0:
+    if all_games == True:
+
+        if results and len(results) > 0:
+            games = []
+
+            for result in results:
+                game_detail = {
+                    "name": result.get("name"),
+                    "release_date": result.get("released"),
+                    "first_genre": result["genres"][0]['name'] if result.get("generes") else "",
+                    "stores": [store['store']['name'] for store in result.get('stores', [])]
+                }
+                games.append(game_detail)
+
+            return games
+
+    else:
         first_result = results[0]
 
         game_details = {
