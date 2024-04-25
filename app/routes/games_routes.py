@@ -10,6 +10,7 @@ RAWG_API_URL = 'https://api.rawg.io/api/games'
 games_routes = Blueprint("games_routes", __name__)
 
 
+# get first game on the list
 @games_routes.route('/<string:name>', methods=["GET"])
 def get_game_by_name(name):
     if not name:
