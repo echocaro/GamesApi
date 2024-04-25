@@ -15,6 +15,6 @@ run `flask run` from the root directory
 \*Requires you to have the rawg api key as of now
 
 - GET /games/<game_name>
-- `TODO` /games
+- GET /games
 - `TODO` /games/create
-- `TODO`
+- `TODO` /games/delete
