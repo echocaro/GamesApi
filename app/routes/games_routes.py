@@ -18,7 +18,7 @@ def get_game_by_name(name):
 
     params = {
         'key': API_KEY,
-        'search': name
+        # 'search': name
     }
     response = requests.get(RAWG_API_URL, params=params)
 
@@ -50,6 +50,34 @@ def get_all_games():
         return jsonify(response.json()), response.status_code
 
 
+@games_routes.route('/<int:id>', methods=["POST"])
+def create_game(id):
+    params = {
+        'key': API_KEY,
+    }
+
+    response = requests.get(f'{RAWG_API_URL}/{id}', params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+
+        extracted_details = {
+            "name": data.get("name"),
+            "release_date": data.get("released"),
+            "first_genre": data['genres'][0]['name'] if data.get('genres') else "",
+            "stores": [store['store']['name'] for store in data.get('stores', [])]
+        }
+
+        new_game = Game(name=extracted_details['name'],
+                        genre=extracted_details['first_genre'], release_date=extracted_details['release_date'], stores=extracted_details['stores'])
+
+        db.session.add(new_game)
+        db.session.commit()
+        return jsonify({'message': 'Game created successfully'}), 201
+    else:
+        return jsonify(response.json()), response.status_code
+
+
 def extract_game_details(data, all_games=True):
     results = data.get('results')
 
@@ -60,6 +88,7 @@ def extract_game_details(data, all_games=True):
 
             for result in results:
                 game_detail = {
+                    "id": result.get("id"),
                     "name": result.get("name"),
                     "release_date": result.get("released"),
                     "first_genre": result["genres"][0]['name'] if result.get("generes") else "",
@@ -74,6 +103,7 @@ def extract_game_details(data, all_games=True):
             first_result = results[0]
 
             game_details = {
+                "id": first_result.get("id"),
                 "name": first_result.get("name"),
                 "release_date": first_result.get("released"),
                 "first_genre": first_result['genres'][0]['name'] if first_result.get('genres') else "",
