@@ -1,0 +1,15 @@
+GET http://127.0.0.1:5000/game/eastward HTTP/1.1
+content-type: application/json
+
+###
+GET http://127.0.0.1:5000/game/ HTTP/1.1
+content-type: application/json
+
+###
+
+POST http://127.0.0.1:5000/game/261232 HTTP/1.1
+content-type: application/json
+
+{
+    "game_id": 261232,
+}
